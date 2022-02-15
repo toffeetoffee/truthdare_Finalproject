@@ -1,78 +1,126 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
 
 void main() {
-  return runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.amber,
-        appBar: AppBar(
-          title: const Text('วันนี้กินอะไรดี?'),
-          backgroundColor: Colors.redAccent,
-        ),
-        body: const DicePage(),
-      ),
-    ),
-  );
+  runApp(MaterialApp(home: MyApp()));
 }
 
-class DicePage extends StatefulWidget {
-  const DicePage({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  _DicePageState createState() => _DicePageState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _DicePageState extends State<DicePage> {
-  int leftNumber = 1;
-  int midNumber = 1;
-  int rightNumber = 1;
+class _MyAppState extends State<MyApp> {
+  int count = 0;
+  int darer = 1;
+  int daree = 1;
 
-  void changeDiceFace() {
+
+  void reset() {
     setState(() {
-      leftNumber = Random().nextInt(10) + 1;
-      midNumber = Random().nextInt(10) + 1;
-      rightNumber = Random().nextInt(10) + 1;
+      darer = Random().nextInt(10) + 1;
+      daree = Random().nextInt(10) + 1;
+      while(darer == daree) {
+        darer = Random().nextInt(10) + 1;
+        daree = Random().nextInt(10) + 1;
+      }
+      count = 0;
     });
+  }
+  void check() {
+    if (daree == 0){
+      Alert(
+        context: context,
+        title: "Your are the daree",
+        desc: "darer will asked you a question/ordered you to do something",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "ok ;(",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {setState(() {
+              Navigator.pop(context);
+            });},
+            width: 120,
+          )
+        ],
+      ).show();
+    }
+    if (darer == 0){
+      Alert(
+        context: context,
+        title: "Your are the darer",
+        desc: "you get to ask daree a question/order daree to do something",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "ok :)",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {setState(() {
+              Navigator.pop(context);
+            });},
+            width: 120,
+          )
+        ],
+      ).show();
+    }
+  }
+
+  void click() {
+    setState(() {
+      count++;
+      darer == darer-1;
+      daree == daree-1;
+    });
+    // ignore: avoid_print
+    //print('Answer Chosen!!');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: TextButton(
-              child: Image.asset(
-                'images/food$leftNumber.jpg',
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Truth or Dare'),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              const Text('(press start/reset if over 9)\n               total click:    '),
+              Text('$count'),
+              //Text('$daree'),
+              //Text('$darer'),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    reset();
+                  });
+                },
+                child: const Text('Start/Reset'),
               ),
-              onPressed: () {
-                changeDiceFace();
-              },
-            ),
-          ),
-          Expanded(
-            child: TextButton(
-              child: Image.asset(
-                'images/food$midNumber.jpg',
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    count++;
+                    darer = darer-1;
+                    daree = daree-1;
+                    check();
+                  });
+                },
+                child: const Image(
+                  image: AssetImage('images/button3.png'),
+                ),
               ),
-              onPressed: () {
-                changeDiceFace();
-              },
-            ),
+            ],
           ),
-          Expanded(
-            child: TextButton(
-              child: Image.asset(
-                'images/food$rightNumber.jpg',
-              ),
-              onPressed: () {
-                changeDiceFace();
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
